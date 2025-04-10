@@ -1,9 +1,7 @@
 from flask import Flask, jsonify, request
 
-# 创建 Flask 应用
 app = Flask(__name__)
 
-# 示例数据
 data_store = {
     "Alice": 30,
     "Bob": 25,
@@ -12,7 +10,6 @@ data_store = {
     "Eva": 22
 }
 
-# 定义路由
 @app.route('/get_age', methods=['GET'])
 def get_age():
     name = request.args.get('name')
@@ -30,12 +27,27 @@ def get_age():
         }
     return jsonify(response_data)
 
-# Vercel 的 Serverless 函数入口
+# Vercel Serverless 入口
 def handler(req):
-    # 将 WSGI 请求传递给 Flask 应用
-    return app(req.environ, start_response)
+    from wsgiref.simple_server import make_server
+    # 将请求交给 Flask 处理
+    response = app.wsgi_app(req.environ, start_response)
+    status, headers = start_response.status, start_response.headers
+    return {
+        "statusCode": int(status.split()[0]),
+        "headers": dict(headers),
+        "body": "".join(response)
+    }
 
-# WSGI 的 start_response 模拟函数
-def start_response(status, headers):
-    # Vercel 会处理状态码和头部，这里仅占位
-    pass
+# WSGI 响应处理
+class StartResponse:
+    def __init__(self):
+        self.status = None
+        self.headers = []
+
+    def __call__(self, status, headers):
+        self.status = status
+        self.headers = headers
+        return self
+
+start_response = StartResponse()
