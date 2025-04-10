@@ -8,7 +8,7 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
+      "src": "/get_age/(.*)",
       "dest": "api/index.py"
     }
   ]
