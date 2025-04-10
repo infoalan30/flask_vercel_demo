@@ -8,8 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.py"
+      "src": "/api/(.*)", // Matches /api/get_age
+      "dest": "api/index.py" // Sends it to your Flask app
     }
   ]
 }
